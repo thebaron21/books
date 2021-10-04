@@ -1,0 +1,28 @@
+{
+    "lang" : "english",
+    "sign_in" : "دخول",
+    "sign_up" : "تسجيل",
+    "email" : "الإيميل",
+    "password" : "كلمة المرور",
+    "password_confiramtion" : "تأكيد كلمة المرور",
+    "login" : "دخول",
+    "register" : "تسجيل جديد",
+    "forgot_password" : "هل نسيت كلمة المرور ؟",
+
+    "theme" : "المظهر",
+    "chat" : "الدردشة",
+    "logout" : "خروج",
+    "posts" : "المنشورات",
+
+    "new_book" : "إضافة كتاب",
+    "home" : "الرئسية",
+    "my_books" : "كتبي",
+
+    "title": "العنوان",
+    "desc" : "الوصف",
+    "phone_number": "رقم الهاتف",
+    "location": "الموقع",
+    "save" : "تحميل"
+
+
+}

@@ -1,0 +1,28 @@
+{
+    "lang" : "عربي",
+    "sign_in" : "SIGN IN",
+    "sign_up" : "SIGN UP",
+    "email" : "Email",
+    "password" : "Password",
+    "password_confiramtion" : "Password Confiramtion",
+    "login" : "Login",
+    "register" : "Register",
+    "forgot_password" : "forgot Password ?",
+
+
+    "theme" : "Theme",
+    "chat" : "Chat",
+    "logout" : "logout",
+    "posts" : "Posts",
+
+    "new_book" : "New Book",
+    "home" : "Home",
+    "my_books" : "My Books",
+
+    "title": "Title",
+    "desc" : "description",
+    "phone_number": "Phone Number",
+    "location": "Location",
+    "save" : "Save"
+
+}

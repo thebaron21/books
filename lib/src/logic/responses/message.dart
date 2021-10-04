@@ -1,0 +1,5 @@
+
+
+class Message {
+  var userId = "";
+}
