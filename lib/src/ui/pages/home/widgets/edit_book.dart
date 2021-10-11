@@ -15,6 +15,7 @@ class EditBookPage extends StatefulWidget {
 
 class _EditBookPageState extends State<EditBookPage> {
   LibraryRespoitory _books = LibraryRespoitory();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +29,7 @@ class _EditBookPageState extends State<EditBookPage> {
         builder:
             (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.hasData) {
-            return _buildEditWidget(snapshot.data.data());
+            return Center(child: _buildEditWidget(snapshot.data.data()));
           } else if (snapshot.hasError) {
             return _buildError(snapshot.error);
           } else {
@@ -52,13 +53,12 @@ class _EditBookPageState extends State<EditBookPage> {
   }
 
   Widget _buildEditWidget(data) {
-    print(data);
     return OneBookEdit(
+      image: data["image"][0],
       title: data["title"],
       desc: data["description"],
       location: data["location"],
       phoneNumber: data["phoneNumber"],
-      price: data["price"],
       uid: widget.uuid,
     );
   }

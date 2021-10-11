@@ -22,12 +22,13 @@ void main() async {
 
   final settings = await Hive.openBox('settings');
   bool isLightTheme = settings.get('isLightTheme') ?? false;
+  bool isInital = settings.get("inital") ?? true;
 
   print(isLightTheme);
   await Firebase.initializeApp();
   runApp(ChangeNotifierProvider(
     create: (_) => ThemeProvider(isLightTheme: isLightTheme),
-    child: MyApp(lang: lang),
+    child: MyApp(lang: lang,isInital:isInital),
   ));
 }
 
@@ -35,8 +36,9 @@ void main() async {
 class MyApp extends StatefulWidget {
   final String lang;
   final ThemeProvider themeProvider;
+  final bool isInital;
 
-  const MyApp({Key key, this.lang, this.themeProvider}) : super(key: key);
+  const MyApp({Key key, this.lang, this.themeProvider, this.isInital}) : super(key: key);
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -74,8 +76,9 @@ class _MyAppState extends State<MyApp> {
       },
       title: 'ketabk',
       // ignore: unnecessary_null_comparison
-      home: LandingPage()
-      // home: user != null ? HomePage() : LoginPage(),
+      home: widget.isInital == true
+          ? LandingPage()
+          : user != null ? HomePage() : LoginPage(),
     );
   }
 }

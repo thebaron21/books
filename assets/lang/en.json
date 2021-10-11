@@ -4,7 +4,7 @@
     "sign_up" : "SIGN UP",
     "email" : "Email",
     "password" : "Password",
-    "password_confiramtion" : "Password Confiramtion",
+    "password_confiramtion" : "Password Confirmation",
     "login" : "Login",
     "register" : "Register",
     "forgot_password" : "forgot Password ?",
@@ -23,6 +23,7 @@
     "desc" : "description",
     "phone_number": "Phone Number",
     "location": "Location",
-    "save" : "Save"
+    "save" : "Save",
+    "update" : "Update"
 
 }

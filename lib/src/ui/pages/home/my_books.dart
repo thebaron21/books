@@ -1,5 +1,7 @@
 
+import 'package:books/src/config/route.dart';
 import 'package:books/src/logic/firebase/book.dart';
+import 'package:books/src/ui/pages/home/widgets/edit_book.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -48,33 +50,35 @@ class _MyBooksState extends State<MyBooks> {
             key: Key(index.toString()),
             onDismissed: (DismissDirection direction) {
               if (direction == DismissDirection.endToStart) {
+                print(docChanges[index].doc.id);
+                _books.delBook(docChanges[index].doc.id);
               } else if (direction == DismissDirection.startToEnd) {
                 print(docChanges[index].doc.id);
                 _books.delBook(docChanges[index].doc.id);
                 print("Delete Books");
               } else {
-                print('Other swiping');
+                print(docChanges[index].doc.id);
+                _books.delBook(docChanges[index].doc.id);
               }
             },
             background: Container(color: Colors.red),
             child: ListTile(
-              title: Text(" {docs[index].data()[title]}"),
-              subtitle: Text(" {docs[index].data()[price]} "),
+              title: Text(" ${(docs[index].data() as Map )['title']}"),
               leading: Container(
                 height: 50,
                 width: 50,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-//                  image: DecorationImage(
-//                    fit: BoxFit.cover,
-//                     image: NetworkImage(docs[index].data()["image"][0]),
-//                  ),
+                 image: DecorationImage(
+                   fit: BoxFit.cover,
+                    image: NetworkImage(( docs[index].data() as Map)["image"][0]),
+                 ),
                 ),
               ),
               trailing: IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () {
-                  // _buildEditButton(context, docChanges[index].doc.id,docs[index].data()["title"]);
+                  _buildEditButton(context, docChanges[index].doc.id,(docs[index].data() as Map)["title"]);
                 },
               ),
             ),
@@ -102,7 +106,7 @@ class _MyBooksState extends State<MyBooks> {
     );
   }
 
-  // _buildEditButton(BuildContext context, String id, data) {
-  //   RouterC.of(context).push(EditBookPage(uuid: id,title: data,));
-  // }
+  _buildEditButton(BuildContext context, String id, data) {
+    RouterC.of(context).push(EditBookPage(uuid: id,title: data,));
+  }
 }

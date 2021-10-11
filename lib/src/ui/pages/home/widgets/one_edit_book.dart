@@ -1,15 +1,19 @@
+import 'dart:io';
+
+import 'package:books/src/config/LocaleLang.dart';
 import 'package:books/src/config/route.dart';
+import 'package:books/src/config/upload_image.dart';
 import 'package:books/src/logic/firebase/book.dart';
-import 'package:books/src/home.dart';
 import 'package:flutter/material.dart';
 
 class OneBookEdit extends StatefulWidget {
   final String title;
   final String desc;
   final String location;
-  final String phoneNumber;
-  final double price;
+  final int phoneNumber;
+  final int price;
   final String uid;
+  final String image;
   OneBookEdit(
       {Key key,
       @required this.title,
@@ -17,7 +21,7 @@ class OneBookEdit extends StatefulWidget {
       @required this.location,
       @required this.phoneNumber,
       @required this.price,
-      @required this.uid})
+      @required this.uid, this.image})
       : super(key: key);
 
   @override
@@ -31,6 +35,7 @@ class _OneBookEditState extends State<OneBookEdit> {
   TextEditingController _phoneNumber = TextEditingController();
   LibraryRespoitory _books = LibraryRespoitory();
   bool _isLoading = false;
+  UploadImage _upload = UploadImage(uri: "gs://books-7b120.appspot.com");
 
   @override
   void initState() {
@@ -38,7 +43,7 @@ class _OneBookEditState extends State<OneBookEdit> {
     _title.text = widget.title;
     _description.text = widget.desc;
     _location.text = widget.location;
-    _phoneNumber.text = widget.phoneNumber;
+    _phoneNumber.text = widget.phoneNumber.toString();
     price = widget.price;
   }
 
@@ -51,30 +56,40 @@ class _OneBookEditState extends State<OneBookEdit> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          line,
-          desginTextField(size, _title, "Title", false),
-          line,
-          desginTextField(size, _description, "description", true),
-          line,
-          desginTextField(size, _phoneNumber, "Phone Number", false),
-          line,
-          desginTextField(size, _location, "Location", false),
-          line,
-          Slider(
-            value: price.toDouble(),
-            min: 0.0,
-            max: 100.0,
-            divisions: 100,
-            activeColor: Colors.teal,
-            semanticFormatterCallback: (newValue) {
-              return "Price : $newValue";
+          InkWell(
+            onTap:(){
+              _showPicker(context);
             },
-            label: "$price",
-            onChanged: (value) {
-              setState(() => price = value);
-            },
+            child: Container(
+              width: size.width*0.95,
+              height: 160,
+              decoration: BoxDecoration(
+                image:DecorationImage(
+                  fit: BoxFit.cover,
+                  image: images.length == 0 ? NetworkImage(
+                      widget.image
+                  ) : AssetImage(
+                      images[0]
+                  ),
+                )
+              ),
+              child: Opacity(
+                opacity: 0.5,
+                child:Icon(
+                  Icons.add,
+                  size: 80,
+                ),
+              )
+            ),
           ),
-          line2,
+          line,
+          designTextField(size, _title,AppLocale.of(context).getTranslated("title"), false),
+          line,
+          designTextField(size, _description,AppLocale.of(context).getTranslated("desc"), true),
+          line,
+          designTextField(size, _phoneNumber, AppLocale.of(context).getTranslated("phone_number"), false),
+          line,
+          designTextField(size, _location, AppLocale.of(context).getTranslated("location") , false),
           line,
           _isLoading == false
               ? _btnSave(size)
@@ -94,7 +109,7 @@ class _OneBookEditState extends State<OneBookEdit> {
         height: 10,
       );
 
-  desginTextField(Size size, TextEditingController con, String s, bool isBig) {
+  designTextField(Size size, TextEditingController con, String s, bool isBig) {
     return Container(
       width: size.width * 0.9,
       height: isBig == false ? size.height * 0.07 : size.height * 0.2,
@@ -117,18 +132,22 @@ class _OneBookEditState extends State<OneBookEdit> {
     return InkWell(
       onTap: () async {
         setState(() => _isLoading = true);
+        await _upload.uploadToStorage(fileImage: File(images[0]));
+        String imageUrl = _upload.getUrlImage[0];
         var data = await _books.updateBook(
           widget.uid,
           {
             'title': _title.text,
             'description': _description.text,
             'price': price,
-            'phoneNumber': _phoneNumber.text,
+            'phoneNumber': int.parse(_phoneNumber.text),
             'location': _location.text,
+            'image': [imageUrl]
           },
         );
         if (data == true) {
-          RouterC.of(context).pushBack(HomePage());
+          // RouterC.of(context).pushBack(HomePage());
+          Navigator.pop(context);
         } else {
           RouterC.of(context).message("خطا", "خطا غير معروف");
         }
@@ -143,7 +162,7 @@ class _OneBookEditState extends State<OneBookEdit> {
         ),
         alignment: Alignment.center,
         child: Text(
-          "Update",
+          AppLocale.of(context).getTranslated("update") ,
           style: TextStyle(
             fontSize: 20,
             color: Colors.white,
@@ -151,6 +170,45 @@ class _OneBookEditState extends State<OneBookEdit> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Container(
+            child: Wrap(
+              children: <Widget>[
+                ListTile(
+                    leading: Icon(Icons.photo_library),
+                    title: Text('Photo Library'),
+                    onTap: () async {
+                      File image = await _upload.openGallery();
+                      images.clear();
+                      setState(() {
+                        images.add(image.path);
+                      });
+                      Navigator.of(context).pop();
+                    }),
+                ListTile(
+                  leading: Icon(Icons.photo_camera),
+                  title: Text('Camera'),
+                  onTap: () async {
+                    File image = await _upload.openCamera();
+                    images.clear();
+                    setState(() {
+                      images.add(image.path);
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
