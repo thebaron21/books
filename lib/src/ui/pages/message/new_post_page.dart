@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:books/src/config/route.dart';
+import 'package:books/src/config/upload_image.dart';
 import 'package:books/src/logic/responses/post_login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +20,7 @@ class _NewPostPageState extends State<NewPostPage> {
   File image;
   bool isLoading = false;
   PostLogic _logic = PostLogic();
+  UploadImage _upload = UploadImage(uri: "gs://books-7b120.appspot.com");
 
   @override
   Widget build(BuildContext context) {
@@ -32,29 +35,35 @@ class _NewPostPageState extends State<NewPostPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 30),
-              image != null
-                  ? Container(
-                      width: size.width * 0.8,
-                      height: 300,
-                      child: Image.file(
-                        image,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : Center(),
-              SizedBox(height: 10),
               PostWidget.desginTextField(size, title, "Title", false),
               SizedBox(
                 height: 10,
               ),
               PostWidget.desginTextField(size, content, "Content", true),
               SizedBox(height: 10),
-//              PostWidget.uploadImage(
-//                size,
-//                onTap: () =>
-//                  _showPicker(context)
-//                ,
-//              ),
+             image == null ? PostWidget.uploadImage(
+               size,
+               onTap: () =>
+                 _showPicker(context)
+             ) : Center(),
+              image != null
+                  ? Container(
+                width: size.width * 0.9,
+                height: 300,
+                decoration: BoxDecoration(
+                  // color: Colors.teal,
+                    border: Border.all(
+                      color: Colors.teal,
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(5)
+                ),
+                child: Image.file(
+                  image,
+                  fit: BoxFit.cover,
+                ),
+              )
+                  : Center(),
               PostWidget.newPost(
                 size: size,
                 busy: isLoading,
@@ -79,16 +88,16 @@ class _NewPostPageState extends State<NewPostPage> {
                     leading: Icon(Icons.photo_library),
                     title: Text('Photo Library'),
                     onTap: () async {
-//                      var file = await _upload.openGallery();
-//                      setState(() => image = file);
-//                      Navigator.of(context).pop();
+                     var file = await _upload.openGallery();
+                     setState(() => image = file);
+                     Navigator.of(context).pop();
                     }),
                 ListTile(
                   leading: Icon(Icons.photo_camera),
                   title: Text('Camera'),
                   onTap: () {
-//                    _upload.openCamera();
-//                    Navigator.of(context).pop();
+                   _upload.openCamera();
+                   Navigator.of(context).pop();
                   },
                 ),
               ],
@@ -100,14 +109,25 @@ class _NewPostPageState extends State<NewPostPage> {
   }
 
   onTap() async {
-    FirebaseAuth user = FirebaseAuth.instance;
-    setState(() => isLoading = true);
-    await _logic.setPost(
-      content: content.text,
-      imageURL: title.text,
-      userId: user.currentUser.uid,
-    );
-    setState(() => isLoading = false);
+    if( image == null ){
+      RouterC.of(context).message("خطأ", "إملء كل العناصر");
+    }else {
+      FirebaseAuth user = FirebaseAuth.instance;
+      setState(() => isLoading = true);
+      await _upload.uploadToStorage(fileImage: image);
+      String imageUrl = _upload.getUrlImage[0];
+      print(imageUrl);
+      var isPost = await _logic.setPost(
+        content: content.text,
+        title: title.text,
+        imageURL: imageUrl,
+        userId: user.currentUser.uid,
+      );
+      if (isPost == true) {
+        Navigator.pop(context);
+      }
+      setState(() => isLoading = false);
+    }
   }
 }
 //com.baron.book

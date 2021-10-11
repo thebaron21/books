@@ -21,35 +21,31 @@ class _BooksState extends State<Books> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return SingleChildScrollView(
-      child: Center(
-        child: Column(
-          children: [
-            Container(
-              width: size.width,
-              height: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.3),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Ketabk"),
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              Center(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _books.getBooks(category: value),
+                  // ignore: missing_return
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      return _buildListView(size, snapshot.data.docs);
+                    } else if (snapshot.hasError) {
+                      return _buildWidgetError(snapshot.error);
+                    } else {
+                      return _buildLoading(size);
+                    }
+                  },
+                ),
               ),
-              child: dropdown(),
-            ),
-            Center(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: _books.getBooks(category: value),
-                // ignore: missing_return
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    return _buildListView(size, snapshot.data.docs);
-                  } else if (snapshot.hasError) {
-                    return _buildWidgetError(snapshot.error);
-                  } else {
-                    return _buildLoading(size);
-                  }
-                },
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -69,21 +65,6 @@ class _BooksState extends State<Books> {
           return WidgetCardBook(
             book: book,
           );
-//            return cardBook(
-//              size,
-//              BookModel(
-//                location: docs[index]["location"],
-//                phoneNumber: docs[index]["phoneNumber"],
-//                id: index,
-//                title: docs[index]["title"],
-//                description: docs[index]["description"],
-//                userEmail: "userEmail",
-//                userId: _currentUser.uid,
-//                price: docs[index]["price"],
-//                image: docs[index]["image"],
-//              ),
-//              context,
-//            );
         },
       );
     } else {

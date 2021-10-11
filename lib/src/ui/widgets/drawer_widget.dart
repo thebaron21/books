@@ -6,6 +6,7 @@ import 'package:books/src/logic/firebase/authentication.dart';
 import 'package:books/src/ui/pages/auth/login_page.dart';
 import 'package:books/src/ui/pages/message/posts_page.dart';
 import 'package:books/src/ui/pages/message/rooms_page.dart';
+import 'package:books/src/ui/pages/theme/dark.dart';
 import 'package:books/src/ui/pages/theme_page.dart';
 import 'package:books/test.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class DrawerC {
           Icon(Icons.directions_walk_rounded),
            AppLocale.of(context).getTranslated("theme"),
           () {
-            RouterC.of(context).push(DarkThemePage());
+            RouterC.of(context).push(DarkPage());
             // ThemeData.dark();
             // Theme.of(context).buttonTheme.
           },

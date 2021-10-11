@@ -31,7 +31,7 @@ class PostWidget {
     return Tooltip(
       message: 'Upload Image',
       child: InkWell(
-        onTap: onTap(),
+        onTap: onTap,
         child: Container(
           width: 50,
           height: 50,
@@ -51,7 +51,7 @@ class PostWidget {
         builder: (BuildContext context,
             AsyncSnapshot<List<QueryDocumentSnapshot>> snapshot) {
           if (snapshot.hasData) {
-            var posts = PostRepoitory.fromMap(snapshot.data);
+            var posts = PostRepository.fromMap(snapshot.data);
             return list(posts.posts);
           } else if (snapshot.hasError) {
             return WidgetFuture.error(snapshot.error);
@@ -68,7 +68,7 @@ class PostWidget {
       InkWell(
         onTap: onTap(),
         child: Container(
-          width: size.width * 0.8,
+          width: busy == false ? size.width * 0.8 : size.width * 0.3,
           height: 48,
           margin: EdgeInsets.symmetric(vertical: 30),
           decoration: BoxDecoration(
@@ -86,7 +86,7 @@ class PostWidget {
                   ),
                 )
               : CircularProgressIndicator(
-                  color: Colors.teal,
+                  color: Colors.white,
                 ),
         ),
       );

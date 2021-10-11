@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'config/LocaleLang.dart';
 import 'config/home_logic.dart';
 import 'config/route.dart';
-import 'ui/pages/home/books_page.dart';
+import 'ui/pages/home/categories_page.dart';
 import 'ui/pages/home/my_books.dart';
 import 'ui/pages/home/new_book.dart';
 import 'ui/widgets/drawer_widget.dart';
@@ -25,13 +25,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       drawer: DrawerC(context).drawer,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Colors.white,
+        // iconTheme: IconThemeData(color: Colors.black),
         title: Text(
           "Ketabk",
-          style: TextStyle(
-            color: Colors.black,
-          ),
         ),
         actions: [
           IconButton(
@@ -50,7 +46,7 @@ class _HomePageState extends State<HomePage> {
           // ignore: missing_enum_constant_in_switch
           switch (snapshot.data) {
             case HOMENAV.HOME:
-              return Books();
+              return CategoriesPage();
             case HOMENAV.EDIT:
               return NewBook();
             case HOMENAV.MYBOOK:
@@ -78,6 +74,7 @@ class _HomePageState extends State<HomePage> {
           }
         },
         currentIndex: indexItem,
+        selectedItemColor: Colors.teal,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.edit),

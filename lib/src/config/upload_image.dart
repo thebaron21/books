@@ -53,7 +53,7 @@ class UploadImage {
           await firebaseStorage.ref("books/$_basenameFile").putFile(fileImage);
       print("Url Image ${await ref.ref.getDownloadURL()}");
       _images.add(await ref.ref.getDownloadURL());
-      print("_url Image Langth : ${_images.length}");
+      print("_url Image Length : ${_images.length}");
     } catch (e) {
       print(e);
     }

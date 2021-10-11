@@ -6,14 +6,16 @@ class PostLogic {
 
   DateTime _dateTime = DateTime.now();
 
-  setPost({@required String content, @required String imageURL, @required String userId}) async {
+  setPost({@required String content, @required String title, @required String imageURL, @required String userId}) async {
     try {
       await _post.doc().set({
         "time": _dateTime,
+        "title" : title,
         "content": content,
         "userId": userId,
         "image": imageURL,
       });
+      return true;
     } catch (e) {
       throw e;
     }

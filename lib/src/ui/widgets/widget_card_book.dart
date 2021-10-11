@@ -11,27 +11,27 @@ class WidgetCardBook extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    print(book.image[0]);
-    return  Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Card(
         elevation: 2.0,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Container(
-              width: size.width * 0.9,
+              width: size.width * 0.95,
               height: size.height * 0.3,
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
-                BoxShadow(
-                  color: Color(0Xff222222).withOpacity(0.1),
-                  blurRadius: 10,
-                )
+                  BoxShadow(
+                    color: Color(0Xff222222).withOpacity(0.1),
+                    blurRadius: 10,
+                  )
                 ],
                 image: DecorationImage(
-                  image: NetworkImage(book.image.length <= 0 ? defaultImage : book.image[0]),
+                  image: NetworkImage(
+                      book.image.length <= 0 ? defaultImage : book.image[0]),
                   fit: BoxFit.fitWidth,
                 ),
               ),
@@ -50,24 +50,24 @@ class WidgetCardBook extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 30),
-                    child: Text(
-                      book.description,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w300,
-                          color: Color(0xFF222222)),
+                  Text(
+                    book.description,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w300,
                     ),
                   ),
                   SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Country(book.location),
+                      country(book.location),
                       Align(
                         alignment: Alignment.bottomRight,
                         child: ElevatedButton(
-                          style: TextButton.styleFrom(primary: Colors.white,backgroundColor: Colors.teal),
+                          style: TextButton.styleFrom(
+                            primary: Colors.white,
+                            backgroundColor: Colors.teal,
+                          ),
                           onPressed: () {},
                           child: Text("Show"),
                         ),
@@ -88,18 +88,17 @@ class WidgetCardBook extends StatelessWidget {
   /// [Alignment], [Alignment.topRight]. This places the [FlutterLogo] in the top
   /// right corner of the parent blue [Container].
   ///
-  Widget Country(String country) {
+  Widget country(String country) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.indigo.withOpacity(0.1),
+        color: Colors.indigo.withOpacity(0.2),
         borderRadius: BorderRadius.circular(5),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 3),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
       child: Text(
         country,
         style: TextStyle(
           fontSize: 18,
-          color: Colors.indigo,
           fontWeight: FontWeight.w400,
         ),
       ),

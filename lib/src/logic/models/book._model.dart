@@ -10,7 +10,7 @@ class BookModel {
   final String userEmail;
   final String userId;
   final String location;
-  final int phoneNumber;
+  final String phoneNumber;
 
   BookModel(
       {@required this.location,
@@ -32,7 +32,7 @@ class BookModel {
         image = json["image"],
         isFavorite = json["isFavorite"],
         location = json["location"],
-        phoneNumber = json["phoneNumber"],
+        phoneNumber = json["phoneNumber"].toString(),
         userEmail = json["userEmail"],
         userId = json["userId"];
 
