@@ -8,7 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Books extends StatefulWidget {
-  const Books({Key key}) : super(key: key);
+  final String category;
+  const Books({Key key, this.category}) : super(key: key);
 
   @override
   _BooksState createState() => _BooksState();
@@ -25,28 +26,18 @@ class _BooksState extends State<Books> {
       appBar: AppBar(
         title: Text("Ketabk"),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              Center(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: _books.getBooks(category: value),
-                  // ignore: missing_return
-                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      return _buildListView(size, snapshot.data.docs);
-                    } else if (snapshot.hasError) {
-                      return _buildWidgetError(snapshot.error);
-                    } else {
-                      return _buildLoading(size);
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _books.getBooks(category: widget.category),
+        // ignore: missing_return
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasData) {
+            return _buildListView(size, snapshot.data.docs);
+          } else if (snapshot.hasError) {
+            return _buildWidgetError(snapshot.error);
+          } else {
+            return _buildLoading(size);
+          }
+        },
       ),
     );
   }

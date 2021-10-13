@@ -1,8 +1,13 @@
+import 'package:books/src/config/LocaleLang.dart';
+import 'package:books/src/config/route.dart';
 import 'package:books/src/logic/models/book._model.dart';
+import 'package:books/src/ui/pages/message/message_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class WidgetCardBook extends StatelessWidget {
   final BookModel book;
+  User user = FirebaseAuth.instance.currentUser;
 
   WidgetCardBook({Key key, this.book}) : super(key: key);
   var defaultImage =
@@ -61,17 +66,22 @@ class WidgetCardBook extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       country(book.location),
-                      Align(
+                      book.userId != user.uid ? Align(
                         alignment: Alignment.bottomRight,
                         child: ElevatedButton(
                           style: TextButton.styleFrom(
                             primary: Colors.white,
                             backgroundColor: Colors.teal,
                           ),
-                          onPressed: () {},
-                          child: Text("Show"),
+                          onPressed:   () {
+                            print( book.userId );
+                            RouterC.of(context).push(MessagePage(receiveId:book.userId ,book:book.title));
+                          },
+                          child: Text(
+                            AppLocale.of(context).getTranslated("chat")
+                          ),
                         ),
-                      )
+                      ) : Center()
                     ],
                   )
                 ],

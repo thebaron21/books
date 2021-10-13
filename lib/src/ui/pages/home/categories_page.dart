@@ -30,7 +30,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 Map data = snap.data.docs[index].data();
                 return InkWell(
                   onTap: (){
-                    RouterC.of(context).push(Books());
+                    RouterC.of(context).push(Books(category: data['name'],));
                   },
                   child: ListTile(
                     title: Text( "${data['name']}" )

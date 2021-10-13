@@ -1,23 +1,42 @@
 
 
-class ModelMessage {
-  final String email;
-  final String message;
-  final String receive;
-  final String sender;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-  ModelMessage({this.email, this.message, this.receive, this.sender});
+class ModelMessage {
+  final String message;
+  final Timestamp date;
+  final Users users;
+
+  ModelMessage({this.date, this.message, this.users});
 
   ModelMessage.fromJson(var json)
-      : email = json["email"],
+  :     date = json["date"],
         message = json["message"],
-        receive = json["receivder"],
-        sender = json["userSender"];
+        users = Users.fromMap(json['users']);
 
   toMap() => {
-    "email" : email,
-    "sender" : sender,
+    "date" : date,
+    "message" : message,
+    "users" : users.toMap()
+  };
+}
+
+class Users{
+  final String senders;
+  final String receive;
+
+  Users(this.senders, this.receive);
+
+  Users.fromMap( var json ) :
+       senders=json[0],
+  receive = json[1];
+
+  toMap2() => {
+    "sender" : receive,
+    "receive" : senders
+  };
+  toMap() =>{
     "receive" : receive,
-    "message" : message
+    "sender" : senders,
   };
 }

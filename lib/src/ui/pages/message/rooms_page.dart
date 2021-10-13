@@ -1,5 +1,6 @@
 import 'package:books/src/config/route.dart';
 import 'package:books/src/logic/firebase/message.dart';
+import 'package:books/src/logic/models/model_message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,17 +25,7 @@ class _ChatRoomState extends State<ChatRoom> {
         backgroundColor: Colors.teal,
         actions: [
           // ignore: deprecated_member_use
-          RaisedButton(
-            onPressed: () async {
-               await _messageFirebase.setMessage(
-                email: user.email,
-                message: "Hello I'am Ahmed Khalil",
-                reciveId: "wmHuRbB2iVfNoAftExc1cLLTVbn1",
-                userId: user.uid,
-              );
-            },
-            child: Text("Click Me!"),
-          )
+
         ],
       ),
       body: StreamBuilder(
@@ -45,15 +36,15 @@ class _ChatRoomState extends State<ChatRoom> {
             return ListView.separated(
               itemCount: snapshot.data.docs.length,
               itemBuilder: (BuildContext context, int index) {
+                String title = (snapshot.data.docs[index].data() as Map)["book"];
                 return InkWell(
                   onTap: () {
-                    RouterC.of(context).push(MessagePage(
-                      receveId: (snapshot.data.docs[index].data()
-                          as Map)["receivder"],
-                    ));
+                    String id = ( snapshot.data.docs[index].data() as Map )["users"][1];
+                    print( id );
+                    RouterC.of(context).push(MessagePage(receiveId: id,));
                   },
                   child: ListTile(
-                    title: Text("fahme"),
+                    title: Text(  title != null ? "صاحب كتاب $title " : "Not Title" ),
                     leading: CircleAvatar(),
                   ),
                 );

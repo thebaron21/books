@@ -5,8 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MessagePage extends StatefulWidget {
-  final String receveId;
-  const MessagePage({Key key, this.receveId}) : super(key: key);
+  final String receiveId;
+  final String book;
+  const MessagePage({Key key, this.receiveId, this.book}) : super(key: key);
 
   @override
   _MessagePageState createState() => _MessagePageState();
@@ -15,9 +16,18 @@ class MessagePage extends StatefulWidget {
 class _MessagePageState extends State<MessagePage> {
   MessageFirebase _messageFirebase = MessageFirebase();
   User user = FirebaseAuth.instance.currentUser;
+  TextEditingController _message = TextEditingController();
+
+  @override
+  dispose(){
+    super.dispose();
+    _message.clear();
+    _message.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.teal,
@@ -27,21 +37,19 @@ class _MessagePageState extends State<MessagePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              StreamBuilder(
-                stream: _messageFirebase.fetchRoom(userId: user.uid).asStream(),
+              FutureBuilder(
+                future: _messageFirebase.fetchChat(userId: user.uid, receiveId: widget.receiveId),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot<Object>> snapshot) {
                   if (snapshot.hasData) {
+                    List list = ( snapshot.data.docs.reversed.toList() );
                     return ListView.separated(
                       shrinkWrap: true,
-                      physics: ScrollPhysics(),
+                      physics: ClampingScrollPhysics(),
                       itemCount: snapshot.data.docs.length,
                       itemBuilder: (BuildContext context, int index) {
-                        ModelMessage modelMessage = ModelMessage.fromJson(
-                            snapshot.data.docs[index].data());
-                        print(modelMessage.sender == user.uid);
-                        return _chatBubble(modelMessage.message,
-                            modelMessage.sender == user.uid, false);
+                        ModelMessage modelMessage = ModelMessage.fromJson(list[index].data());
+                        return _chatBubble(modelMessage,modelMessage.users.senders == user.uid, false);
                       },
                       separatorBuilder: (BuildContext context, int index) =>
                           Divider(),
@@ -57,50 +65,71 @@ class _MessagePageState extends State<MessagePage> {
                   }
                 },
               ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: () async {
-                      ModelMessage message = ModelMessage(
-                          sender: user.uid,
-                          receive: widget.receveId,
-                          email: user.email,
-                          message: "Test");
-                      print(message.toMap());
-                      var data = await _messageFirebase.setMessage(
-                        userId: message.sender,
-                        reciveId: message.receive,
-                        message: message.message,
-                        email: message.email,
-                      );
-                      print(data);
-                    },
-                  )
-                ],
+              SizedBox(
+                height:size.height*0.12
               )
             ],
           ),
         ),
       ),
+      bottomSheet: Container(
+        height:60,
+        width:size.width,
+        child: Row(
+        children: [
+          SizedBox(width:5),
+          button(
+            icon: Icon(Icons.send, color:Colors.white),
+            onPressed: ()async{
+              var data = await _messageFirebase.setMessage(
+                userId: user.uid,
+                receiveId: widget.receiveId,
+                message: _message.text,
+                title: widget.book
+              );
+              print(data);
+              _message.clear();
+            },
+          ),
+          SizedBox(width:5),
+          Container(
+            width: size.width*.85,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: TextField(
+              maxLines: 10,
+              controller: _message,
+              decoration: InputDecoration(
+                hintText: "Message ...",
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+
+        ],
+      ),
+      ),
     );
   }
 
-  _chatBubble(String message, bool isMe, bool isSameUser) {
+  _chatBubble(ModelMessage message, bool isMe, bool isSameUser) {
     if (isMe) {
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
             alignment: Alignment.topRight,
             child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.80,
-              ),
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(14),
               margin: EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                  bottomLeft: Radius.circular(30),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),
@@ -110,116 +139,71 @@ class _MessagePageState extends State<MessagePage> {
                 ],
               ),
               child: Text(
-                message,
+                message.message,
+              ),
+            ),
+          ),
+          Text(
+            message.date.toDate().toString(),
+          ),
+        ],
+      );
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Container(
+            alignment: Alignment.topLeft,
+            child: Container(
+              padding: EdgeInsets.all(14),
+              margin: EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.teal,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                  ),
+                ],
+              ),
+              child: Text(
+                message.message,
                 style: TextStyle(
                   color: Colors.white,
                 ),
               ),
             ),
           ),
-          !isSameUser
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Text(
-                      DateTime.now().toString(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black45,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                          ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 15,
-                        // backgroundImage: AssetImage(message.sender.imageUrl),
-                      ),
-                    ),
-                  ],
-                )
-              : Container(
-                  child: null,
-                ),
-        ],
-      );
-    } else {
-      return Column(
-        children: <Widget>[
-          Container(
-            alignment: Alignment.topLeft,
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.80,
-              ),
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                  ),
-                ],
-              ),
-              child: Text(
-                message,
-                style: TextStyle(
-                  color: Colors.black54,
-                ),
-              ),
+          Text(
+            message.date.toDate().toString(),
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.black45,
             ),
           ),
-          !isSameUser
-              ? Row(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                          ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 15,
-                        // backgroundImage: AssetImage(message.sender.imageUrl),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      DateTime.now().toString(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black45,
-                      ),
-                    ),
-                  ],
-                )
-              : Container(
-                  child: null,
-                ),
         ],
       );
     }
+  }
+
+  button({Icon icon,Function onPressed}){
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        width: 50,
+        height:50,
+        decoration:BoxDecoration(
+          shape: BoxShape.circle,
+          color:Colors.teal,
+        ),
+        child:icon
+      ),
+    );
   }
 }

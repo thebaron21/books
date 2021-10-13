@@ -1,3 +1,4 @@
+import 'package:books/res.dart';
 import 'package:books/src/config/LocaleLang.dart';
 import 'package:books/src/config/route.dart';
 import 'package:books/src/logic/firebase/authentication.dart';
@@ -6,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../home.dart';
-
 
 class LoginPage extends StatefulWidget {
   @override
@@ -26,14 +26,15 @@ class _AuthPageState extends State<LoginPage> {
   TextEditingController _email = TextEditingController();
   TextEditingController _pass = TextEditingController();
   bool isLoading = false;
+  bool accept = false;
   bool isLogin = true;
 
   DecorationImage _buildBackgroundImage() {
     return DecorationImage(
       fit: BoxFit.cover,
       colorFilter:
-      ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.dstATop),
-      image: AssetImage('assets/book.jpg'),
+          ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.dstATop),
+      image: AssetImage(Res.book),
     );
   }
 
@@ -92,16 +93,15 @@ class _AuthPageState extends State<LoginPage> {
 
   Widget _buildAcceptSwitch() {
     return SwitchListTile(
-      value: isLogin,
+      value: _formData['acceptTerms'],
       onChanged: (bool value) {
         setState(() {
-          isLogin = value;
+          _formData['acceptTerms'] = value;
         });
       },
       title: Text('Accept Terms'),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +134,7 @@ class _AuthPageState extends State<LoginPage> {
                     SizedBox(
                       height: 10.0,
                     ),
-                    isLogin  == false
+                    isLogin == false
                         ? _buildPasswordConfirmTextField()
                         : Container(),
                     _buildAcceptSwitch(),
@@ -153,15 +153,13 @@ class _AuthPageState extends State<LoginPage> {
                     SizedBox(
                       height: 10.0,
                     ),
-                isLoading == true
-                    ? CircularProgressIndicator()
-                    : RaisedButton(
-                  textColor: Colors.white,
-                  child: Text(isLogin == true
-                      ? 'LOGIN'
-                      : 'SIGNUP'),
-                  onPressed: () =>  _signInAndSignUp(size)
-                )
+                    isLoading == true
+                        ? CircularProgressIndicator()
+                        : RaisedButton(
+                            textColor: Colors.white,
+                            child: Text(isLogin == true ? 'LOGIN' : 'SIGNUP'),
+                            onPressed: () => _submit(),
+                          )
                   ],
                 ),
               ),
@@ -180,73 +178,77 @@ class _AuthPageState extends State<LoginPage> {
     _authenticatinoRxdart.closeSignUp();
   }
 
+  _submit() async {
 
-  _signInAndSignUp(Size size) {
-    return InkWell(
-      onTap: () async {
-        setState(() => isLoading = true);
-//        await Future.delayed(Duration(seconds: 4));
-        print(isLoading);
-        if (isLogin == true) {
-          await _authenticatinoRxdart.login(_formData['email'], _formData['password']);
-          _authenticatinoRxdart.subjectLogin.listen((value) {
-            print("Login is Value $value");
+    print(_formData['acceptTerms']);
+    if (_formData['acceptTerms'] == true) {
+      setState(() => isLoading = true);
+      if (isLogin == true) {
+        print("IsLogin : $isLogin");
+        await _authenticatinoRxdart.login(
+            _email.text, _pass.text);
+        _authenticatinoRxdart.subjectLogin.listen((value) {
+          print("Login is Value $value");
+          switch (value) {
+            case LoginState.Success:
+              RouterC.of(context).pushBack(HomePage());
+              break;
+            case LoginState.UserNotFound:
+              RouterC.of(context).message("خطأ", "المستخدم غير موجود");
+              break;
+            case LoginState.InvalidEmail:
+              RouterC.of(context).message("خطأ", "البريد الإلكتروني غير موجود");
+              break;
+            case LoginState.Failure:
+              RouterC.of(context).message("خطا", "خطأ غيرمعروف");
+              break;
+            case LoginState.WrongPassword:
+              RouterC.of(context).message("خطا", "كلمة المرور غير صحيحة");
+              break;
+          }
+        });
+      } else {
+        if (_pass.text == _passwordTextController.text) {
+          await _authenticatinoRxdart.singUp(_email.text, _pass.text);
+          _authenticatinoRxdart.subjectSignUp.listen((value) {
+            print("Sing Up is Value : $value");
             switch (value) {
-              case LoginState.Success:
+              case RegisterState.Success:
                 RouterC.of(context).pushBack(HomePage());
                 break;
-              case LoginState.UserNotFound:
-                RouterC.of(context).message("خطأ", "المستخدم غير موجود");
+              case RegisterState.WeakPassword:
+                RouterC.of(context).message("خطا", "كلمة المرور ضعيفة");
                 break;
-              case LoginState.InvalidEmail:
-                RouterC.of(context)
-                    .message("خطأ", "البريد الإلكتروني غير موجود");
+              case RegisterState.EmailAlreadyInUse:
+                RouterC.of(context).message("خطا", "البريد الإلكتروني مستخدم ");
                 break;
-              case LoginState.Failure:
-                RouterC.of(context).message("خطا", "خطأ غيرمعروف");
+              case RegisterState.InvalidEmail:
+                RouterC.of(context).message("خطا", "خطأ في البريد الإلكتروني");
                 break;
-              case LoginState.WrongPassword:
-                RouterC.of(context).message("خطا", "كلمة المرور غير صحيحة");
+              case RegisterState.Unknown:
+                RouterC.of(context).message("خطا", "خطأ مجهول");
+                break;
+              case RegisterState.Failure:
+                RouterC.of(context).message("خطا", "خطأ غير معروف");
                 break;
             }
           });
+          setState(() => isLoading = false);
         } else {
-          if (_pass.text == _passwordTextController.text) {
-            await _authenticatinoRxdart.singUp(_email.text, _pass.text);
-            _authenticatinoRxdart.subjectSignUp.listen((value) {
-              print("Sing Up is Value : $value");
-              switch (value) {
-                case RegisterState.Success:
-                    RouterC.of(context).pushBack(HomePage());
-                  break;
-                case RegisterState.WeakPassword:
-                  RouterC.of(context).message("خطا", "كلمة المرور ضعيفة");
-                  break;
-                case RegisterState.EmailAlreadyInUse:
-                  RouterC.of(context)
-                      .message("خطا", "البريد الإلكتروني مستخدم ");
-                  break;
-                case RegisterState.InvalidEmail:
-                  RouterC.of(context)
-                      .message("خطا", "خطأ في البريد الإلكتروني");
-                  break;
-                case RegisterState.Unknown:
-                  RouterC.of(context).message("خطا", "خطأ مجهول");
-                  break;
-                case RegisterState.Failure:
-                  RouterC.of(context).message("خطا", "خطأ غير معروف");
-                  break;
-              }
-            });
-            setState(() => isLoading = false);
-          } else {
-            setState(() => isLoading = false);
-            RouterC.of(context).message("خطأ", "كلمة السر غير متطابقة");
-          }
+          setState(() => isLoading = false);
+          RouterC.of(context).message("خطأ", "كلمة السر غير متطابقة");
         }
+      }
 
-        setState(() => isLoading = false);
-      },
+      setState(() => isLoading = false);
+    } else {
+      RouterC.of(context).message('تنبيه', 'يجب الموافقة على الشروط');
+    }
+  }
+
+  _signInAndSignUp(Size size) {
+    return InkWell(
+      onTap: null,
       child: Container(
         width: size.width * 0.9,
         height: size.height * 0.07,
@@ -259,7 +261,7 @@ class _AuthPageState extends State<LoginPage> {
           isLogin == false
               ? AppLocale.of(context).getTranslated("register")
               : AppLocale.of(context).getTranslated("login"),
-          style:  GoogleFonts.lalezar(
+          style: GoogleFonts.lalezar(
             fontSize: 20,
             color: Colors.white,
             fontWeight: FontWeight.w500,

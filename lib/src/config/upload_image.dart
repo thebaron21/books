@@ -17,16 +17,20 @@ class UploadImage {
 
   // Method to Open Gallery Phone
   openGallery() async {
+    List resultList;
+    await _imagepicker.pickMultiImage();
+    print(resultList);
+
     // ignore: deprecated_member_use
-    var _imageSource = await _imagepicker.getImage(source: ImageSource.gallery);
-    if (_imageSource != null) {
-      File ileImage = File(_imageSource.path);
-      print(_imageSource.path);
-      _fileImage.add(ileImage);
-      return ileImage;
-    } else {
-      print("anythings");
-    }
+    // var _imageSource = await _imagepicker.getImage(source: ImageSource.gallery);
+    // if (_imageSource != null) {
+    //   File ileImage = File(_imageSource.path);
+    //   print(_imageSource.path);
+    //   _fileImage.add(ileImage);
+    //   return ileImage;
+    // } else {
+    //   print("anythings");
+    // }
   }
 
   // Method to Open Camare Phone
