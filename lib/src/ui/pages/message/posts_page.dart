@@ -1,7 +1,6 @@
 import 'package:books/src/config/route.dart';
 import 'package:books/src/logic/models/post_model.dart';
 import 'package:books/src/logic/responses/post_login.dart';
-import 'package:books/src/ui/pages/message/widgets/posts_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'new_post_page.dart';
@@ -14,7 +13,6 @@ class PostPage extends StatefulWidget {
 class _PostPageState extends State<PostPage> {
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: Text("Posts"),

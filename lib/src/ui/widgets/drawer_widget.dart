@@ -3,13 +3,10 @@ import 'package:books/src/config/LocaleLang.dart';
 import 'package:books/src/config/box_hive.dart';
 import 'package:books/src/config/route.dart';
 import 'package:books/src/logic/firebase/authentication.dart';
-import 'package:books/src/logic/firebase/message.dart';
 import 'package:books/src/ui/pages/auth/auth_page.dart';
 import 'package:books/src/ui/pages/message/posts_page.dart';
 import 'package:books/src/ui/pages/message/rooms_page.dart';
 import 'package:books/src/ui/pages/theme/dark.dart';
-import 'package:books/test.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 

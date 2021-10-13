@@ -5,11 +5,18 @@ import 'package:books/src/ui/pages/message/message_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class WidgetCardBook extends StatelessWidget {
+class WidgetCardBook extends StatefulWidget {
   final BookModel book;
-  User user = FirebaseAuth.instance.currentUser;
 
   WidgetCardBook({Key key, this.book}) : super(key: key);
+
+  @override
+  State<WidgetCardBook> createState() => _WidgetCardBookState();
+}
+
+class _WidgetCardBookState extends State<WidgetCardBook> {
+  User user = FirebaseAuth.instance.currentUser;
+
   var defaultImage =
       "https://images.pexels.com/photos/2852438/pexels-photo-2852438.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940";
 
@@ -36,7 +43,7 @@ class WidgetCardBook extends StatelessWidget {
                 ],
                 image: DecorationImage(
                   image: NetworkImage(
-                      book.image.length <= 0 ? defaultImage : book.image[0]),
+                      widget.book.image.length <= 0 ? defaultImage : widget.book.image[0]),
                   fit: BoxFit.fitWidth,
                 ),
               ),
@@ -49,14 +56,14 @@ class WidgetCardBook extends StatelessWidget {
                 children: [
                   SizedBox(height: 10),
                   Text(
-                    book.title,
+                    widget.book.title,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    book.description,
+                    widget.book.description,
                     style: TextStyle(
                       fontWeight: FontWeight.w300,
                     ),
@@ -65,8 +72,8 @@ class WidgetCardBook extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      country(book.location),
-                      book.userId != user.uid ? Align(
+                      country(widget.book.location),
+                      widget.book.userId != user.uid ? Align(
                         alignment: Alignment.bottomRight,
                         child: ElevatedButton(
                           style: TextButton.styleFrom(
@@ -74,8 +81,8 @@ class WidgetCardBook extends StatelessWidget {
                             backgroundColor: Colors.teal,
                           ),
                           onPressed:   () {
-                            print( book.userId );
-                            RouterC.of(context).push(MessagePage(receiveId:book.userId ,book:book.title));
+                            print( widget.book.userId );
+                            RouterC.of(context).push(MessagePage(receiveId:widget.book.userId ,book:widget.book.title));
                           },
                           child: Text(
                             AppLocale.of(context).getTranslated("chat")

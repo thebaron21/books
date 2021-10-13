@@ -11,7 +11,6 @@ class OneBookEdit extends StatefulWidget {
   final String desc;
   final String location;
   final int phoneNumber;
-  final int price;
   final String uid;
   final String image;
   OneBookEdit(
@@ -20,7 +19,6 @@ class OneBookEdit extends StatefulWidget {
       @required this.desc,
       @required this.location,
       @required this.phoneNumber,
-      @required this.price,
       @required this.uid, this.image})
       : super(key: key);
 
@@ -44,7 +42,6 @@ class _OneBookEditState extends State<OneBookEdit> {
     _description.text = widget.desc;
     _location.text = widget.location;
     _phoneNumber.text = widget.phoneNumber.toString();
-    price = widget.price;
   }
 
   List<String> images = [];

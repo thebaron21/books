@@ -1,6 +1,5 @@
 import 'package:books/src/config/route.dart';
 import 'package:books/src/logic/firebase/message.dart';
-import 'package:books/src/logic/models/model_message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

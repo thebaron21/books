@@ -1,10 +1,8 @@
 import 'package:books/src/logic/firebase/categories_bloc.dart';
 import 'package:books/src/logic/models/book._model.dart';
 import 'package:books/src/logic/firebase/book.dart';
-import 'package:books/src/ui/widgets/book_card.dart';
 import 'package:books/src/ui/widgets/widget_card_book.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Books extends StatefulWidget {
@@ -17,7 +15,6 @@ class Books extends StatefulWidget {
 
 class _BooksState extends State<Books> {
   LibraryRespoitory _books = LibraryRespoitory();
-  User _currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {

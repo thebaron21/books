@@ -1,10 +1,8 @@
 import 'package:books/res.dart';
-import 'package:books/src/config/LocaleLang.dart';
 import 'package:books/src/config/route.dart';
 import 'package:books/src/logic/firebase/authentication.dart';
 import 'package:books/src/logic/rxdartModel/login_rxdart.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../home.dart';
 
@@ -43,12 +41,13 @@ class _AuthPageState extends State<LoginPage> {
       decoration: InputDecoration(
           labelText: 'E-Mail', filled: true, fillColor: Colors.white),
       keyboardType: TextInputType.emailAddress,
-      validator: (String value) {
+      validator: (value) {
         if (value.isEmpty ||
             !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
                 .hasMatch(value)) {
-          return 'Please enter a valid email';
+          return "Please enter a valid email";
         }
+        return "";
       },
       controller: _email,
       onSaved: (String value) {
@@ -67,6 +66,7 @@ class _AuthPageState extends State<LoginPage> {
         if (value.isEmpty || value.length < 6) {
           return 'Password invalid';
         }
+        return "";
       },
       onSaved: (String value) {
         _formData['password'] = value;
@@ -87,6 +87,7 @@ class _AuthPageState extends State<LoginPage> {
         if (_passwordTextController.text != value) {
           return 'Passwords do not match.';
         }
+        return "";
       },
     );
   }
@@ -107,7 +108,6 @@ class _AuthPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95;
-    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: Text('Login'),
@@ -141,6 +141,7 @@ class _AuthPageState extends State<LoginPage> {
                     SizedBox(
                       height: 10.0,
                     ),
+                    // ignore: deprecated_member_use
                     FlatButton(
                       child: Text(
                           'Switch to ${isLogin == false ? 'Signup' : 'Login'}'),
@@ -155,6 +156,7 @@ class _AuthPageState extends State<LoginPage> {
                     ),
                     isLoading == true
                         ? CircularProgressIndicator()
+                        // ignore: deprecated_member_use
                         : RaisedButton(
                             textColor: Colors.white,
                             child: Text(isLogin == true ? 'LOGIN' : 'SIGNUP'),
@@ -246,28 +248,4 @@ class _AuthPageState extends State<LoginPage> {
     }
   }
 
-  _signInAndSignUp(Size size) {
-    return InkWell(
-      onTap: null,
-      child: Container(
-        width: size.width * 0.9,
-        height: size.height * 0.07,
-        decoration: BoxDecoration(
-          color: Colors.teal,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          isLogin == false
-              ? AppLocale.of(context).getTranslated("register")
-              : AppLocale.of(context).getTranslated("login"),
-          style: GoogleFonts.lalezar(
-            fontSize: 20,
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-  }
 }
