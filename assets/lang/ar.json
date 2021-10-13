@@ -4,7 +4,7 @@
     "sign_up" : "تسجيل",
     "email" : "الإيميل",
     "password" : "كلمة المرور",
-    "password_confiramtion" : "تأكيد كلمة المرور",
+    "password_confirmation" : "تأكيد كلمة المرور",
     "login" : "دخول",
     "register" : "تسجيل جديد",
     "forgot_password" : "هل نسيت كلمة المرور ؟",

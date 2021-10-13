@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                       size,
                       _passConfiramtion,
                       AppLocale.of(context)
-                          .getTranslated("password_confiramtion"),
+                          .getTranslated("password_confirmation"),
                       isPass: true)
                   : Text(""),
               // isLogin == false ? _typeAccount(size) : Text(""),
@@ -310,14 +310,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
-/*
-    "sign_in" : "SIGN IN",
-    "sign_up" : "SIGN UP",
-    "email" : "Email",
-    "password" : "Password",
-    "password_confiramtion" : "Password Confiramtion",
-    "login" : "Login",
-    "register" : "Register",
-    "forgot_password" : "forgot Password ?"
-*/

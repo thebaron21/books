@@ -1,5 +1,6 @@
 import 'package:books/src/home.dart';
 import 'package:books/src/ui/landing_page.dart';
+import 'package:books/src/ui/pages/auth/auth_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,6 @@ import 'package:provider/provider.dart';
 import 'src/ui/pages/theme/theme_provider.dart';
 import 'src/config/LocaleLang.dart';
 import 'src/config/box_hive.dart';
-import 'src/ui/pages/auth/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

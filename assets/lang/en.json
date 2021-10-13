@@ -4,7 +4,7 @@
     "sign_up" : "SIGN UP",
     "email" : "Email",
     "password" : "Password",
-    "password_confiramtion" : "Password Confirmation",
+    "password_confirmation" : "Password Confirmation",
     "login" : "Login",
     "register" : "Register",
     "forgot_password" : "forgot Password ?",
