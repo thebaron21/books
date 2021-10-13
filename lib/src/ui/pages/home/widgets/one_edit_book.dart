@@ -182,10 +182,10 @@ class _OneBookEditState extends State<OneBookEdit> {
                     leading: Icon(Icons.photo_library),
                     title: Text('Photo Library'),
                     onTap: () async {
-                      File image = await _upload.openGallery();
+                      List<File> image = await _upload.openGallery();
                       images.clear();
                       setState(() {
-                        images.add(image.path);
+                        images.add(image[0].path);
                       });
                       Navigator.of(context).pop();
                     }),

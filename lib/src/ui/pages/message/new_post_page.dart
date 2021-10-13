@@ -88,8 +88,8 @@ class _NewPostPageState extends State<NewPostPage> {
                     leading: Icon(Icons.photo_library),
                     title: Text('Photo Library'),
                     onTap: () async {
-                     var file = await _upload.openGallery();
-                     setState(() => image = file);
+                      List<File> file = await _upload.openGallery();
+                     setState(() => image = file[0]);
                      Navigator.of(context).pop();
                     }),
                 ListTile(

@@ -213,20 +213,21 @@ class _NewBookState extends State<NewBook> {
                     leading: Icon(Icons.photo_library),
                     title: Text('Photo Library'),
                     onTap: () async {
-                      File image = await _upload.openGallery();
-                      setState(() {
-                        images.add(image.path);
+                      List<File> image = await _upload.openGallery();
+                      image.forEach((element) {
+                        setState(() {
+                          images.add(element.path);
+                        });
                       });
+
                       Navigator.of(context).pop();
                     }),
                 ListTile(
-                  leading: Icon(Icons.photo_camera),
                   title: Text('Camera'),
+                  leading: Icon(Icons.photo_camera),
                   onTap: () async {
                     File image = await _upload.openCamera();
-                    setState(() {
-                      images.add(image.path);
-                    });
+                    images.add(image.path);
                     Navigator.of(context).pop();
                   },
                 ),

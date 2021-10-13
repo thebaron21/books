@@ -16,17 +16,21 @@ class UploadImage {
   List<String> _images = [];
 
   // Method to Open Gallery Phone
-  openGallery() async {
-    List resultList;
-    await _imagepicker.pickMultiImage();
-    print(resultList);
+  Future<List<File>> openGallery() async {
+    List<XFile> resultList;
+    resultList = await _imagepicker.pickMultiImage();
+    resultList.forEach((element) {
+        File ileImage = File(element.path);
+        print(element.path);
+        _fileImage.add(ileImage);
+    });
+
+    return _fileImage;
 
     // ignore: deprecated_member_use
     // var _imageSource = await _imagepicker.getImage(source: ImageSource.gallery);
     // if (_imageSource != null) {
-    //   File ileImage = File(_imageSource.path);
-    //   print(_imageSource.path);
-    //   _fileImage.add(ileImage);
+
     //   return ileImage;
     // } else {
     //   print("anythings");
