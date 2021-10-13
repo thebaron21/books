@@ -10,7 +10,7 @@ class MessageFirebase {
 
   Future<QuerySnapshot> fetchChat({String userId,String receiveId}) async {
     var data = _data
-        .where("users", isEqualTo: [userId,receiveId])
+        .where("users" , arrayContainsAny:[userId,receiveId] )
         .get();
     return data;
   }

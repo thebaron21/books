@@ -1,5 +1,7 @@
+import 'package:books/src/config/route.dart';
 import 'package:books/src/logic/firebase/book.dart';
 import 'package:books/src/logic/models/book._model.dart';
+import 'package:books/src/ui/pages/message/message_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart';
@@ -88,16 +90,21 @@ class _SearchPageState extends State<SearchPage> {
       itemCount: docs.length,
       itemBuilder: (BuildContext context, int index) {
         BookModel book = BookModel.withJson(docs[index].data());
-        return ListTile(
-          trailing: Text(book.price == 0 ? "Free" : "\$${book.price}"),
-          leading: CircleAvatar(
-            backgroundColor: Colors.white,
-            backgroundImage: NetworkImage(
-              book.image.length <= 0 ? defaultImage : book.image[0],
+        String userId = book.userId;
+        return InkWell(
+          onTap: (){
+            RouterC.of(context).push(MessagePage(receiveId:book.userId ,book:book.title));
+          },
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Colors.white,
+              backgroundImage: NetworkImage(
+                book.image.length <= 0 ? defaultImage : book.image[0],
+              ),
             ),
+            title: Text(book.title),
+            subtitle: Text(book.description),
           ),
-          title: Text(book.title),
-          subtitle: Text(book.description),
         );
       },
     );

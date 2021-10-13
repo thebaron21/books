@@ -32,44 +32,41 @@ class _MessagePageState extends State<MessagePage> {
       appBar: AppBar(
         backgroundColor: Colors.teal,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              FutureBuilder(
-                future: _messageFirebase.fetchChat(userId: user.uid, receiveId: widget.receiveId),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot<Object>> snapshot) {
-                  if (snapshot.hasData) {
-                    List list = ( snapshot.data.docs.reversed.toList() );
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      physics: ClampingScrollPhysics(),
-                      itemCount: snapshot.data.docs.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        ModelMessage modelMessage = ModelMessage.fromJson(list[index].data());
-                        return _chatBubble(modelMessage,modelMessage.users.senders == user.uid, false);
-                      },
-                      separatorBuilder: (BuildContext context, int index) =>
-                          Divider(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text(snapshot.error.toString()),
-                    );
-                  } else {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
-              ),
-              SizedBox(
-                height:size.height*0.12
-              )
-            ],
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: _messageFirebase.fetchChat(userId: user.uid, receiveId: widget.receiveId),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot<Object>> snapshot) {
+                if (snapshot.hasData) {
+                  List list = ( snapshot.data.docs.reversed.toList() );
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    physics: ClampingScrollPhysics(),
+                    itemCount: snapshot.data.docs.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      ModelMessage modelMessage = ModelMessage.fromJson(list[index].data());
+                      return _chatBubble(modelMessage,modelMessage.users.senders == user.uid, false);
+                    },
+                    separatorBuilder: (BuildContext context, int index) =>
+                        Divider(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Not Chat"),
+                  );
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
+            ),
+            SizedBox(
+              height:size.height*0.12
+            )
+          ],
         ),
       ),
       bottomSheet: Container(
@@ -119,6 +116,7 @@ class _MessagePageState extends State<MessagePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
+            margin: EdgeInsets.symmetric(horizontal: 10),
             alignment: Alignment.topRight,
             child: Container(
               padding: EdgeInsets.all(14),
@@ -153,6 +151,7 @@ class _MessagePageState extends State<MessagePage> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
           Container(
+            margin: EdgeInsets.symmetric(horizontal: 10),
             alignment: Alignment.topLeft,
             child: Container(
               padding: EdgeInsets.all(14),
@@ -184,7 +183,6 @@ class _MessagePageState extends State<MessagePage> {
             message.date.toDate().toString(),
             style: TextStyle(
               fontSize: 12,
-              color: Colors.black45,
             ),
           ),
         ],
