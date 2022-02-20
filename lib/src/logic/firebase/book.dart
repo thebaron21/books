@@ -10,11 +10,26 @@ class LibraryRespoitory {
   User _currentUser = FirebaseAuth.instance.currentUser;
 
   Stream<QuerySnapshot> getBooks({String category}) async* {
-    yield* _data.where("category", isEqualTo: category).get().asStream();
+    yield* _data
+        .where("category", isEqualTo: category)
+        .snapshots();
   }
 
   Stream<QuerySnapshot> getMyBooks() async* {
     yield* _data.where("userId", isEqualTo: _currentUser.uid).snapshots();
+  }
+  Stream<QuerySnapshot> getBookOfType({String type})async*{
+    yield* _data
+        .where( "type" , isEqualTo: type)      
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> seoBook({String type,String category,key})async*{
+    yield* _data
+        .where( "type" , isEqualTo: type)
+        .where("category" , isEqualTo: category)
+        .where('keys', arrayContains: key)
+        .snapshots();
   }
 
   /// [setBook] Insert new Book

@@ -23,8 +23,15 @@
     "phone_number": "رقم الهاتف",
     "location": "الموقع",
     "save" : "تحميل",
-    "update" : "تعديل"
-
+    "update" : "تعديل",
+    "favorite" :  "المفضلة",
+    "summaries" : "ملخصات",
+    "support" : "الخدمات الطلابية",
+    "content" : "المحتوى",
+    "settings" : "الإعدادات",
+    "who_are_we" : "من نحن",
+    "disclaimer" : "إخلاء المسؤلية",
+    "books" : "كتب"
 
 
 }

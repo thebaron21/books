@@ -10,6 +10,9 @@ import 'package:books/src/logic/function/search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+enum TypeForm { book, post }
 
 class NewBook extends StatefulWidget {
   const NewBook({Key key}) : super(key: key);
@@ -19,15 +22,17 @@ class NewBook extends StatefulWidget {
 }
 
 class _NewBookState extends State<NewBook> {
+  TypeForm _typeForm = TypeForm.book;
   TextEditingController _title = TextEditingController();
   TextEditingController _description = TextEditingController();
   TextEditingController _location = TextEditingController();
-  TextEditingController _phoneNumber = TextEditingController();
+  
   UploadImage _upload;
-  LibraryRespoitory _libraryRespoitory;
+  LibraryRespoitory _libraryRepository;
   User _currentUser = FirebaseAuth.instance.currentUser;
   bool isLoading = false;
   List<String> images = [];
+  // TODO: fdfsfs
   CategoriesFirebase bloc;
   String value = "الإعلام واللغات والعلاقات العامة";
   SearchFunction _searchFunction;
@@ -36,12 +41,14 @@ class _NewBookState extends State<NewBook> {
   void initState() {
     super.initState();
     _upload = UploadImage(uri: "gs://books-7b120.appspot.com");
-    _libraryRespoitory = LibraryRespoitory();
+    _libraryRepository = LibraryRespoitory();
     bloc = CategoriesFirebase();
     _searchFunction = SearchFunction();
   }
 
   num price = 0;
+  String groupValue = "type";
+  bool isPost = false;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -49,15 +56,20 @@ class _NewBookState extends State<NewBook> {
       child: Column(
         children: [
           line,
-          desginTextField(size, _title, AppLocale.of(context).getTranslated("title"), false),
+          desginTextField(size, _title,
+              AppLocale.of(context).getTranslated("title"), false),
           line,
-          desginTextField(size, _description, AppLocale.of(context).getTranslated("desc"), true, isRow: true),
+          desginTextField(size, _description,
+              AppLocale.of(context).getTranslated("desc"), true,
+              isRow: true),
+          
           line,
-          desginTextField(size, _phoneNumber, AppLocale.of(context).getTranslated("phone_number") , false),
+          desginTextField(size, _location,
+              AppLocale.of(context).getTranslated("location"), false),
           line,
-          desginTextField(size, _location, AppLocale.of(context).getTranslated("location") , false),
-          line,
-          dropdown(),
+          dropdown(size),
+          line2,
+          _typeFormWidget(),
           line2,
           _uploadImage(size),
           _buildImage(size),
@@ -96,6 +108,7 @@ class _NewBookState extends State<NewBook> {
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: s,
+          hintStyle: GoogleFonts.tajawal(),
         ),
       ),
     );
@@ -103,37 +116,7 @@ class _NewBookState extends State<NewBook> {
 
   _btnSave(Size size) {
     return InkWell(
-      onTap: () async {
-        setState(() => isLoading = true);
-        print("Is Loading : $isLoading");
-        for (var i in _upload.getFile) {
-          await _upload.uploadToStorage(fileImage: i);
-        }
-        List<String> searchTitle = _searchFunction.searchText(_title.text);
-
-        var isSet = await _libraryRespoitory.setBook(
-          {
-            'title': _title.text,
-            'keys': searchTitle,
-            'category': value,
-            'description': _description.text,
-            'price': price,
-            'image': _upload.getUrlImage,
-            'phoneNumber': int.parse(_phoneNumber.text),
-            'location': _location.text,
-            "userId": _currentUser.uid
-          },
-        );
-        print("Is Seting $isSet");
-        if (isSet == true) {
-          RouterC.of(context).push(HomePage());
-          setState(() => isLoading = false);
-        } else {
-          RouterC.of(context).message("خطا", "خطا غير معروف");
-          setState(() => isLoading = false);
-        }
-        setState(() => isLoading = false);
-      },
+      onTap: onSave,
       child: Container(
         width: size.width * 0.9,
         height: size.height * 0.07,
@@ -143,7 +126,7 @@ class _NewBookState extends State<NewBook> {
         ),
         alignment: Alignment.center,
         child: Text(
-          AppLocale.of(context).getTranslated("save")  ,
+          AppLocale.of(context).getTranslated("save"),
           style: TextStyle(
             fontSize: 20,
             color: Colors.white,
@@ -239,32 +222,102 @@ class _NewBookState extends State<NewBook> {
     );
   }
 
-  dropdown() {
-    return StreamBuilder(
-      stream: bloc.fetchCategories().asStream(),
-      // ignore: missing_return
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasData) {
-          return DropdownButton(
-            onChanged: (va) => setState(() => value = va),
-            value: value,
-            items: snapshot.data.docs
-                .map(
-                  (e) => DropdownMenuItem(
-                    value: (e.data() as Map)['name'],
-                    child: Text((e.data() as Map)['name']),
-                  ),
-                )
-                .toList(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text(snapshot.error.toString()),
-          );
-        } else {
-          return Center(child: CircularProgressIndicator());
-        }
+  dropdown(Size size) {
+    return Container(
+      width: size.width * 0.9,
+      height: size.height * 0.07,
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.3),
+      ),
+      alignment: Alignment.center,
+      child: StreamBuilder(
+        stream: bloc.fetchCategories().asStream(),
+        // ignore: missing_return
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasData) {
+            return DropdownButton(
+              style: GoogleFonts.tajawal(
+                fontWeight: FontWeight.bold,
+              ),
+              onChanged: (va) => setState(() => value = va),
+              value: value,
+              items: snapshot.data.docs
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: (e.data() as Map)['name'],
+                      child: Text(
+                        (e.data() as Map)['name'],
+                        style: Theme.of(context).textTheme.subtitle2,
+                      ),
+                    ),
+                  )
+                  .toList(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+    );
+  }
+
+  _typeFormWidget() {
+    return Column(
+      children: [
+        ListTile(
+          title: const Text('Book'),
+          leading: Radio<TypeForm>(
+              value: TypeForm.book,
+              groupValue: _typeForm,
+              onChanged: (value) {
+                setState(() => _typeForm = value);
+              }),
+        ),
+        ListTile(
+          title: const Text('Post'),
+          leading: Radio<TypeForm>(
+              value: TypeForm.post,
+              groupValue: _typeForm,
+              onChanged: (value) {
+                setState(() => _typeForm = value);
+              }),
+        )
+      ],
+    );
+  }
+
+  void onSave() async {
+    setState(() => isLoading = true);
+    print("Is Loading : $isLoading");
+    for (var i in _upload.getFile) {
+      await _upload.uploadToStorage(fileImage: i);
+    }
+    List<String> searchTitle = _searchFunction.searchText(_title.text);
+
+    var isSet = await _libraryRepository.setBook(
+      {
+        'title': _title.text,
+        "date": Timestamp.now(),
+        'keys': searchTitle,
+        'category': value,
+        "type" : _typeForm == TypeForm.book ? "book" : "post",
+        'description': _description.text,
+        'image': _upload.getUrlImage,
+        'location': _location.text,
+        "userId": _currentUser.uid,
       },
     );
+    if (isSet == true) {
+      RouterC.of(context).push(HomePage());
+      setState(() => isLoading = false);
+    } else {
+      RouterC.of(context).message("خطا", "خطا غير معروف");
+      setState(() => isLoading = false);
+    }
+    setState(() => isLoading = false);
   }
 }

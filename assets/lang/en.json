@@ -24,6 +24,14 @@
     "phone_number": "Phone Number",
     "location": "Location",
     "save" : "Save",
-    "update" : "Update"
+    "update" : "Update",
+    "favorite" : "favorite",
+    "summaries" : "summaries",
+    "support": "Student Services",
+    "content" : "Content",
+    "settings" : "Settings",
+    "who_are_we" : "About Us",
+    "disclaimer" : "Disclaimer",
+    "books": "Books"
 
 }

@@ -17,6 +17,8 @@ class MyBooks extends StatefulWidget {
 
 class _MyBooksState extends State<MyBooks> {
   LibraryRespoitory _books = LibraryRespoitory();
+  var defaultImage =
+      "https://images.pexels.com/photos/2852438/pexels-photo-2852438.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940";
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -38,26 +40,23 @@ class _MyBooksState extends State<MyBooks> {
   }
 
   /// [Widget] of Page [UI]
-
-
   Widget _buildListView(
       size, List<QueryDocumentSnapshot> docs, List<DocumentChange> docChanges) {
     if (docs.length > 0) {
       return ListView.builder(
         itemCount: docs.length,
         itemBuilder: (BuildContext context, int index) {
+          List image = [];
+          image.addAll(( docs[index].data() as Map)["image"]);
+          if(image.length==0)image.add(defaultImage);
           return Dismissible(
             key: Key(index.toString()),
             onDismissed: (DismissDirection direction) {
               if (direction == DismissDirection.endToStart) {
-                print(docChanges[index].doc.id);
                 _books.delBook(docChanges[index].doc.id);
               } else if (direction == DismissDirection.startToEnd) {
-                print(docChanges[index].doc.id);
                 _books.delBook(docChanges[index].doc.id);
-                print("Delete Books");
               } else {
-                print(docChanges[index].doc.id);
                 _books.delBook(docChanges[index].doc.id);
               }
             },
@@ -71,7 +70,9 @@ class _MyBooksState extends State<MyBooks> {
                   shape: BoxShape.circle,
                  image: DecorationImage(
                    fit: BoxFit.cover,
-                    image: NetworkImage(( docs[index].data() as Map)["image"][0]),
+                    image: NetworkImage(
+                        image.first
+                    ),
                  ),
                 ),
               ),
@@ -87,7 +88,7 @@ class _MyBooksState extends State<MyBooks> {
       );
     } else {
       return Center(
-        child: Text("Not Books"),
+        child: Text("Not Found"),
       );
     }
   }

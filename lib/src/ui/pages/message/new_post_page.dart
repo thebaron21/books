@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:books/src/config/LocaleLang.dart';
 import 'package:books/src/config/route.dart';
 import 'package:books/src/config/upload_image.dart';
 import 'package:books/src/logic/responses/post_login.dart';
@@ -27,7 +28,7 @@ class _NewPostPageState extends State<NewPostPage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.teal,
+        title: Text( AppLocale.of(context).getTranslated("support") ),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -35,11 +36,15 @@ class _NewPostPageState extends State<NewPostPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 30),
-              PostWidget.desginTextField(size, title, "Title", false),
+              PostWidget.desginTextField(size, title,
+                  AppLocale.of(context).getTranslated("title")
+                  , false),
               SizedBox(
                 height: 10,
               ),
-              PostWidget.desginTextField(size, content, "Content", true),
+              PostWidget.desginTextField(size, content,
+                  AppLocale.of(context).getTranslated("content")
+                  , true),
               SizedBox(height: 10),
              image == null ? PostWidget.uploadImage(
                size,

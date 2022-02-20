@@ -27,14 +27,6 @@ class UploadImage {
 
     return _fileImage;
 
-    // ignore: deprecated_member_use
-    // var _imageSource = await _imagepicker.getImage(source: ImageSource.gallery);
-    // if (_imageSource != null) {
-
-    //   return ileImage;
-    // } else {
-    //   print("anythings");
-    // }
   }
 
   // Method to Open Camare Phone

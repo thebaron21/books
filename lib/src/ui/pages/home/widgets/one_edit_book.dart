@@ -12,7 +12,7 @@ class OneBookEdit extends StatefulWidget {
   final String location;
   final int phoneNumber;
   final String uid;
-  final String image;
+  String image;
   OneBookEdit(
       {Key key,
       @required this.title,
@@ -53,14 +53,10 @@ class _OneBookEditState extends State<OneBookEdit> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          InkWell(
-            onTap:(){
-              _showPicker(context);
-            },
-            child: Container(
-              width: size.width*0.95,
-              height: 160,
-              decoration: BoxDecoration(
+          Container(
+            width: size.width*0.95,
+            height: 160,
+            decoration: BoxDecoration(
                 image:DecorationImage(
                   fit: BoxFit.cover,
                   image: images.length == 0 ? NetworkImage(
@@ -69,14 +65,6 @@ class _OneBookEditState extends State<OneBookEdit> {
                       images[0]
                   ),
                 )
-              ),
-              child: Opacity(
-                opacity: 0.5,
-                child:Icon(
-                  Icons.add,
-                  size: 80,
-                ),
-              )
             ),
           ),
           line,
@@ -129,8 +117,12 @@ class _OneBookEditState extends State<OneBookEdit> {
     return InkWell(
       onTap: () async {
         setState(() => _isLoading = true);
-        await _upload.uploadToStorage(fileImage: File(images[0]));
-        String imageUrl = _upload.getUrlImage[0];
+        if( images.isNotEmpty ){
+          await _upload.uploadToStorage(fileImage: File(images[0]));
+          String imageUrl = _upload.getUrlImage[0];
+          widget.image=imageUrl;
+        }
+
         var data = await _books.updateBook(
           widget.uid,
           {
@@ -139,7 +131,6 @@ class _OneBookEditState extends State<OneBookEdit> {
             'price': price,
             'phoneNumber': int.parse(_phoneNumber.text),
             'location': _location.text,
-            'image': [imageUrl]
           },
         );
         if (data == true) {

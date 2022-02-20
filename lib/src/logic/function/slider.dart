@@ -21,9 +21,9 @@ final sliderArrayList = [
   Slider(
       sliderImageUrl: 'assets/images/slider_2.png',
       sliderHeading: Constants.TWO,
-      sliderSubHeading: Constants.SLIDER_HEADING_1),
+      sliderSubHeading: Constants.SLIDER_HEADING_2),
   Slider(
       sliderImageUrl: 'assets/images/slider_3.png',
       sliderHeading: Constants.THREE,
-      sliderSubHeading: Constants.SLIDER_HEADING_1),
+      sliderSubHeading: Constants.SLIDER_HEADING_3),
 ];

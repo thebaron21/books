@@ -1,53 +1,72 @@
-import 'package:books/src/logic/models/model_message.dart';
-import 'package:books/src/logic/firebase/message.dart';
+import 'package:books/src/logic/firebase/messages.dart';
+import 'package:books/src/logic/firebase/profile_user.dart';
+import 'package:books/src/logic/models/message_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MessagePage extends StatefulWidget {
-  final String receiveId;
+  final String userId;
   final String book;
-  const MessagePage({Key key, this.receiveId, this.book}) : super(key: key);
+  const MessagePage({Key key, this.userId, this.book}) : super(key: key);
 
   @override
   _MessagePageState createState() => _MessagePageState();
 }
 
 class _MessagePageState extends State<MessagePage> {
-  MessageFirebase _messageFirebase = MessageFirebase();
+  MessagesFirebaseRealTime _messageFirebase = MessagesFirebaseRealTime();
   User user = FirebaseAuth.instance.currentUser;
   TextEditingController _message = TextEditingController();
 
   @override
-  dispose(){
+  dispose() {
     super.dispose();
     _message.clear();
     _message.dispose();
   }
 
+  UserProfile obj = UserProfile();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.teal,
+        title: FutureBuilder(
+          future: obj.getProfile(uuid: widget.userId),
+          builder: (context, AsyncSnapshot<QuerySnapshot> s) {
+            if (s.hasData) {
+              if (s.data.docs.length > 0) {
+                Map userInfo = s.data.docs[0].data();
+                return Text(userInfo["name"] ?? "");
+              } else {
+                return Text("مجهول");
+              }
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          },
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             FutureBuilder(
-              future: _messageFirebase.fetchChat(userId: user.uid, receiveId: widget.receiveId),
+              future: _messageFirebase.getConversation(
+                  userId: user.uid, peerId: widget.userId),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot<Object>> snapshot) {
                 if (snapshot.hasData) {
-                  List list = ( snapshot.data.docs.reversed.toList() );
+                  List list = (snapshot.data.docs.reversed.toList());
                   return ListView.separated(
                     shrinkWrap: true,
                     physics: ClampingScrollPhysics(),
                     itemCount: snapshot.data.docs.length,
                     itemBuilder: (BuildContext context, int index) {
-                      ModelMessage modelMessage = ModelMessage.fromJson(list[index].data());
-                      return _chatBubble(modelMessage,modelMessage.users.senders == user.uid, false);
+                      MessageModel message =
+                          MessageModel.toObject(list[index].data());
+                      return _chatBubble(
+                          message, user.uid == message.idForm, false);
                     },
                     separatorBuilder: (BuildContext context, int index) =>
                         Divider(),
@@ -63,54 +82,51 @@ class _MessagePageState extends State<MessagePage> {
                 }
               },
             ),
-            SizedBox(
-              height:size.height*0.12
-            )
+            SizedBox(height: size.height * 0.12)
           ],
         ),
       ),
       bottomSheet: Container(
-        height:60,
-        width:size.width,
+        height: 60,
+        width: size.width,
         child: Row(
-        children: [
-          SizedBox(width:5),
-          button(
-            icon: Icon(Icons.send, color:Colors.white),
-            onPressed: ()async{
-              var data = await _messageFirebase.setMessage(
-                userId: user.uid,
-                receiveId: widget.receiveId,
-                message: _message.text,
-                title: widget.book
-              );
-              print(data);
-              _message.clear();
-            },
-          ),
-          SizedBox(width:5),
-          Container(
-            width: size.width*.85,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
+          children: [
+            SizedBox(width: 5),
+            button(
+              icon: Icon(Icons.send, color: Colors.white),
+              onPressed: () async {
+                print(user.uid);
+                print(widget.userId);
+                var data = await _messageFirebase.setMessage(
+                    message: MessageModel(user.uid, widget.userId, false,
+                        Timestamp.now(), _message.text));
+                print(data);
+                _message.clear();
+                setState(() {});
+              },
             ),
-            child: TextField(
-              maxLines: 10,
-              controller: _message,
-              decoration: InputDecoration(
-                hintText: "Message ...",
-                border: InputBorder.none,
+            SizedBox(width: 5),
+            Container(
+              width: size.width * .85,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: TextField(
+                maxLines: 10,
+                controller: _message,
+                decoration: InputDecoration(
+                  hintText: "Message ...",
+                  border: InputBorder.none,
+                ),
               ),
             ),
-          ),
-
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
 
-  _chatBubble(ModelMessage message, bool isMe, bool isSameUser) {
+  _chatBubble(MessageModel message, bool isMe, bool isSameUser) {
     if (isMe) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,7 +153,7 @@ class _MessagePageState extends State<MessagePage> {
                 ],
               ),
               child: Text(
-                message.message,
+                message.content,
               ),
             ),
           ),
@@ -172,7 +188,7 @@ class _MessagePageState extends State<MessagePage> {
                 ],
               ),
               child: Text(
-                message.message,
+                message.content,
                 style: TextStyle(
                   color: Colors.white,
                 ),
@@ -190,18 +206,17 @@ class _MessagePageState extends State<MessagePage> {
     }
   }
 
-  button({Icon icon,Function onPressed}){
+  button({Icon icon, Function onPressed}) {
     return InkWell(
       onTap: onPressed,
       child: Container(
-        width: 50,
-        height:50,
-        decoration:BoxDecoration(
-          shape: BoxShape.circle,
-          color:Colors.teal,
-        ),
-        child:icon
-      ),
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.teal,
+          ),
+          child: icon),
     );
   }
 }

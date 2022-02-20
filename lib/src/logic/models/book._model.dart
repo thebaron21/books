@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class BookModel {
-  final int id;
   final String title;
   final String description;
   final int price;
@@ -15,7 +14,6 @@ class BookModel {
   BookModel(
       {@required this.location,
       @required this.phoneNumber,
-      @required this.id,
       @required this.title,
       @required this.description,
       @required this.price,
@@ -25,8 +23,7 @@ class BookModel {
       this.isFavorite = false});
 
   BookModel.withJson(var json)
-      : id = json["id"],
-        title = json["title"],
+      : title = json["title"],
         description = json["description"],
         price = json["price"],
         image = json["image"],
@@ -37,7 +34,6 @@ class BookModel {
         userId = json["userId"];
 
   toMap() => {
-        "id": id,
         "title": title,
         "description": description,
         "price": price,

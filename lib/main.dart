@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'log/log_app.dart';
 import 'src/ui/pages/theme/theme_provider.dart';
 import 'src/config/LocaleLang.dart';
 import 'src/config/box_hive.dart';
@@ -17,18 +18,19 @@ void main() async {
   await Firebase.initializeApp();
   await Hive.initFlutter();
   await Hive.openBox(BoxHive.APP);
-  await Hive.box(BoxHive.APP).put("lang", "ar");
+  await Hive.openBox("favorite");
   String lang = Hive.box(BoxHive.APP).get("lang");
 
   final settings = await Hive.openBox('settings');
-  bool isLightTheme = settings.get('isLightTheme') ?? false;
+  bool isLightTheme = settings.get('isLightTheme') ?? true;
   bool isInital = settings.get("inital") ?? true;
+  // log(" STARING is initial $isInital", level: 1, name: "TheBaron");
+  // log(" STARING is theme dark", level: 1, name: "TheBaron");
 
-  print(isLightTheme);
   await Firebase.initializeApp();
   runApp(ChangeNotifierProvider(
     create: (_) => ThemeProvider(isLightTheme: isLightTheme),
-    child: MyApp(lang: lang,isInital:isInital),
+    child: MyApp(lang: lang, isInital: isInital),
   ));
 }
 
@@ -38,7 +40,8 @@ class MyApp extends StatefulWidget {
   final ThemeProvider themeProvider;
   final bool isInital;
 
-  const MyApp({Key key, this.lang, this.themeProvider, this.isInital}) : super(key: key);
+  const MyApp({Key key, this.lang, this.themeProvider, this.isInital})
+      : super(key: key);
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -52,33 +55,32 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: themeProvider.themeData(),
-      localizationsDelegates: [
-        AppLocale.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      locale: Locale(widget.lang, ''),
-      supportedLocales: [
-        Locale('ar', ''),
-        Locale('en', ''),
-      ],
-      localeResolutionCallback: (currentLocale, supportedLocales) {
-        if (currentLocale != null) {
-          for (Locale locale in supportedLocales) {
-            if (currentLocale.languageCode == locale.languageCode) {
-              return currentLocale;
+        debugShowCheckedModeBanner: false,
+        theme: themeProvider.themeData(),
+        localizationsDelegates: [
+          AppLocale.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        locale: Locale(widget.lang ?? 'ar', ''),
+        supportedLocales: [
+          Locale('ar', ''),
+          Locale('en', ''),
+        ],
+        localeResolutionCallback: (currentLocale, supportedLocales) {
+          if (currentLocale != null) {
+            for (Locale locale in supportedLocales) {
+              if (currentLocale.languageCode == locale.languageCode) {
+                return currentLocale;
+              }
             }
           }
-        }
-        return supportedLocales.first;
-      },
-      title: 'ketabk',
-      // ignore: unnecessary_null_comparison
-      home: widget.isInital == true
-          ? LandingPage()
-          : user != null ? HomePage() : LoginPage(),
-    );
+          return supportedLocales.first;
+        },
+        title: "كتابك الجامعي",
+        home: widget.isInital == true
+            ? LandingPage()
+            : user != null ? HomePage() : LoginPage(),
+        );
   }
 }

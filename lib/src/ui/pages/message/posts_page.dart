@@ -1,3 +1,4 @@
+import 'package:books/src/config/LocaleLang.dart';
 import 'package:books/src/config/route.dart';
 import 'package:books/src/logic/models/post_model.dart';
 import 'package:books/src/logic/responses/post_login.dart';
@@ -14,23 +15,24 @@ class _PostPageState extends State<PostPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryTextTheme.subtitle1.color,
+        child: Icon( Icons.add,
+          color: Theme.of(context).primaryColor,
+        ),
+        onPressed: (){
+          RouterC.of(context).push(NewPostPage());
+        },
+      ),
       appBar: AppBar(
-        title: Text("Posts"),
-        backgroundColor: Colors.teal,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              RouterC.of(context).push(NewPostPage());
-            },
-          )
-        ],
+        title: Text(
+            AppLocale.of(context).getTranslated("support")
+        ),
       ),
       body: StreamBuilder(
         stream: PostLogic().getPosts().asStream(),
         builder: (context,AsyncSnapshot<List<QueryDocumentSnapshot>> snapshot){
           if(snapshot.hasData){
-            print( snapshot.data[0].data() );
             var posts = PostRepository.fromMap(snapshot.data);
             return ListView.builder(
               itemCount: posts.posts.length,
@@ -63,84 +65,85 @@ class CardPost extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(8),
-                  topLeft: Radius.circular(8),
-                  bottomRight: Radius.circular(8),
+    return Container(
+      margin:EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(
+          color:Theme.of(context).colorScheme.primary,
+          width: 5,          
+        )
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: size.width * 0.95,
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: NetworkImage(
+                    post.imageURL ?? ""
                 ),
-                color: Colors.grey.shade300,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          post.title ?? "Title Empty",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF333333),
-                            fontSize: 17,
-                          ),
-                        ),
-                        Text(
-                          post.content ?? "Content Empty",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF333333),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            (post.date).toDate().toString(),
-                            style: TextStyle(
-                              color: Color(0xFF333333),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    width: size.width * 0.95,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(10),
-                      ),
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                          post.imageURL ?? ""
-                        ),
-                      ),
-                    ),
-                  )
-                ],
               ),
             ),
           ),
-        )
-      ],
+          Container(
+            padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            post.title ?? "Title Empty",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                            ),
+                          ),
+                          Text(
+                            post.content ?? "Content Empty",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              (post.date).toDate().toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

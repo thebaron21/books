@@ -1,6 +1,6 @@
 import 'dart:async';
 
-enum HOMENAV { HOME, EDIT , MYBOOK }
+enum HOMENAV { HOME, EDIT , MYBOOK , BOOKS }
 
 class ControllerBookApp {
   StreamController<HOMENAV> _controllerBookApp = StreamController<HOMENAV>.broadcast();
