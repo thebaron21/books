@@ -65,7 +65,6 @@ class _SliderLayoutViewState extends State<SliderLayoutView> {
           child: Stack(
             alignment: AlignmentDirectional.bottomCenter,
             children: <Widget>[
-              Text("dfjlksdfjkls\b{adf}"),
               PageView.builder(
                 scrollDirection: Axis.horizontal,
                 controller: _pageController,

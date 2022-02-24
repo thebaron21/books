@@ -97,10 +97,10 @@ class _HomePageState extends State<HomePage> {
         unselectedItemColor: Theme.of(context).splashColor,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.edit),
+            icon: Icon(Icons.book_rounded),
             // ignore: deprecated_member_use
             title: Text(
-              AppLocale.of(context).getTranslated("new_book"),
+              AppLocale.of(context).getTranslated("my_books"),
             ),
           ),
           BottomNavigationBarItem(
@@ -117,13 +117,16 @@ class _HomePageState extends State<HomePage> {
               AppLocale.of(context).getTranslated("books"),
             ),
           ),
+
           BottomNavigationBarItem(
-            icon: Icon(Icons.book_rounded),
+            icon: Icon(Icons.edit),
             // ignore: deprecated_member_use
             title: Text(
-              AppLocale.of(context).getTranslated("my_books"),
+              AppLocale.of(context).getTranslated("new_book"),
             ),
           ),
+
+          
         ],
       ),
     );
