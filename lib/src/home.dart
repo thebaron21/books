@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         onTap: (index) {
           switch (index) {
             case 0:
-              navigator.setControllerBookApp.add(HOMENAV.EDIT);
+              navigator.setControllerBookApp.add(HOMENAV.MYBOOK);
               setState(() => indexItem = 0);
               break;
             case 1:
@@ -87,7 +87,8 @@ class _HomePageState extends State<HomePage> {
               setState(() => indexItem = 2);
               break;
             case 3:
-              navigator.setControllerBookApp.add(HOMENAV.MYBOOK);
+              
+              navigator.setControllerBookApp.add(HOMENAV.EDIT);
               setState(() => indexItem = 3);
               break;
           }
